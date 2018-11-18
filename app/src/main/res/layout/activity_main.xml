@@ -40,7 +40,7 @@
             android:text="Media URL" />
 
         <EditText
-            android:id="@+id/media_url_edit_text"
+            android:id="@+id/mediaErlEditText"
             android:layout_width="fill_parent"
             android:layout_height="111dp"
             android:layout_weight="1"
@@ -57,11 +57,28 @@
             android:text="Content Type" />
 
         <Spinner
-            android:id="@+id/content_type_spinner"
+            android:id="@+id/contentTypeSpinner"
             android:layout_width="match_parent"
             android:layout_height="35dp"
             app:layout_anchor="@+id/include"
             app:layout_anchorGravity="top|center" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Device Info" />
+
+        <TextView
+            android:id="@+id/deviceTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:lines="4"
+            android:maxLines="4"
+            android:text=""
+            android:textColor="@android:color/black" />
 
     </LinearLayout>
 

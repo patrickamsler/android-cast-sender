@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaMetadata;
@@ -38,16 +39,17 @@ public class MainActivity extends AppCompatActivity {
     private CastSessionState castSessionState = CastSessionState.DISCONNECTED;
     private EditText mediaUrlEditText;
     private Spinner mediaContentSpinner;
+    private TextView deviceTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton floatingActionBtn = findViewById(R.id.fab);
+        floatingActionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (castSessionState == CastSessionState.CONNECTED) {
@@ -72,9 +74,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createInputFields() {
-        mediaUrlEditText = findViewById(R.id.media_url_edit_text);
+        mediaUrlEditText = findViewById(R.id.mediaErlEditText);
+        deviceTextView = findViewById(R.id.deviceTextView);
+        deviceTextView.setText("Status: disconnected");
 
-        mediaContentSpinner = findViewById(R.id.content_type_spinner);
+        mediaContentSpinner = findViewById(R.id.contentTypeSpinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.content_type_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -203,11 +207,15 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.castSession = castSession;
                 castSessionState = CastSessionState.CONNECTED;
                 supportInvalidateOptionsMenu();
+                String id = castSession.getCastDevice().getFriendlyName();
+                String model = castSession.getCastDevice().getModelName();
+                deviceTextView.setText("Status: connected\nDevice id: " + id + "\nDevice model: " + model);
             }
 
             private void onApplicationDisconnected() {
                 castSessionState = CastSessionState.DISCONNECTED;
                 supportInvalidateOptionsMenu();
+                deviceTextView.setText("Status: disconnected");
             }
         };
     }
