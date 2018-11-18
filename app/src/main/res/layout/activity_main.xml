@@ -20,7 +20,50 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_main" />
+    <include
+        android:id="@+id/include"
+        layout="@layout/content_main" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="80dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Media URL" />
+
+        <EditText
+            android:id="@+id/media_url_edit_text"
+            android:layout_width="fill_parent"
+            android:layout_height="111dp"
+            android:layout_weight="1"
+            android:ems="10"
+            android:inputType="textCapSentences|textMultiLine"
+            android:gravity="top"
+            android:text="" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="112dp"
+            android:paddingTop="10dp"
+            android:layout_height="wrap_content"
+            android:text="Content Type" />
+
+        <Spinner
+            android:id="@+id/content_type_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            app:layout_anchor="@+id/include"
+            app:layout_anchorGravity="top|center" />
+
+    </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -28,6 +71,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        app:srcCompat="@drawable/ic_leak_add_black_24dp" />
+
 
 </android.support.design.widget.CoordinatorLayout>

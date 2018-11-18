@@ -8,6 +8,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
 
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaMetadata;
@@ -17,17 +21,23 @@ import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class MainActivity extends AppCompatActivity {
 
     private enum CastSessionState {CONNECTED, DISCONNECTED}
+
+    private Map<String, String> defaultUrls = new HashMap<>();
 
     private CastContext castContext;
     private MenuItem mediaRouteMenuItem;
     private Toolbar toolbar;
     private CastSession castSession;
     private SessionManagerListener<CastSession> sessionManagerListener;
-
     private CastSessionState castSessionState = CastSessionState.DISCONNECTED;
+    private EditText mediaUrlEditText;
+    private Spinner mediaContentSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +52,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (castSessionState == CastSessionState.CONNECTED) {
                     loadRemoteMedia();
-                    Snackbar.make(view, "Remote media loaded...", Snackbar.LENGTH_SHORT)
-                            .setAction("Action", null).show();
                 }
                 else {
                     Snackbar.make(view, "Not connected to chrome cast", Snackbar.LENGTH_SHORT)
@@ -52,15 +60,39 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
+        createInputFields();
         setupActionBar();
 
         castContext = CastContext.getSharedInstance(this);
         setupCastListener();
+
+        defaultUrls.put("videos/mp4", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4");
+        defaultUrls.put("application/x-mpegurl", "https://commondatastorage.googleapis.com/gtv-videos-bucket/CastVideos/hls/BigBuckBunny.m3u8");
+        defaultUrls.put("application/dash+xml", "https://commondatastorage.googleapis.com/gtv-videos-bucket/CastVideos/dash/TearsOfSteel.mpd");
+    }
+
+    private void createInputFields() {
+        mediaUrlEditText = findViewById(R.id.media_url_edit_text);
+
+        mediaContentSpinner = findViewById(R.id.content_type_spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.content_type_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mediaContentSpinner.setAdapter(adapter);
+        mediaContentSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                String contentType = mediaContentSpinner.getSelectedItem().toString();
+                mediaUrlEditText.setText(defaultUrls.get(contentType));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) { }
+        });
     }
 
     private void setupActionBar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
     }
@@ -75,12 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
@@ -115,15 +142,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private MediaInfo buildMediaInfo() {
+        String contentType = mediaContentSpinner.getSelectedItem().toString();
+
         MediaMetadata movieMetadata = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
-
         movieMetadata.putString(MediaMetadata.KEY_TITLE, "HOOQ Test Video");
-//        movieMetadata.addImage(new WebImage(Uri.parse(mSelectedMedia.getImage(0))));
-//        movieMetadata.addImage(new WebImage(Uri.parse(mSelectedMedia.getImage(1))));
 
-        return new MediaInfo.Builder("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4")
+        return new MediaInfo.Builder(mediaUrlEditText.getText().toString().trim())
                 .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
-                .setContentType("videos/mp4")
+                .setContentType(contentType)
                 .setMetadata(movieMetadata)
 //                .setStreamDuration(mSelectedMedia.getDuration() * 1000)
                 .build();
